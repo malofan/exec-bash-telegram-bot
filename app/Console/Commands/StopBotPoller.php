@@ -2,12 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use Cache;
 use Log;
+use App;
 use Psr\SimpleCache\InvalidArgumentException;
 
-class StopBotPoller extends Command
+
+class StopBotPoller extends BotPoller
 {
     /**
      * The name and signature of the console command.
@@ -21,26 +22,16 @@ class StopBotPoller extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Stop Telegram Bot Polling Service';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
+     * @inheritdoc
      */
     public function handle()
     {
         try {
-            Cache::store()->delete('telegramBotIsRunning');
-            if (!Cache::store()->get('telegramBotIsRunning', false)) {
+            Cache::forget(self::BOT_POLLER_CACHE_ID);
+            if (!Cache::has(self::BOT_POLLER_CACHE_ID)) {
                 print 'Bot was stopped' . PHP_EOL;
                 Log::info('Bot is stopped');
             } else {
